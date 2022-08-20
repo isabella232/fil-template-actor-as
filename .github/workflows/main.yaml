@@ -1,0 +1,82 @@
+name: "Checks"
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: "Build"
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16.13.0'
+      - name: Install latest stable
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      - name: Restore crates
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('./Makefile') }}
+      - name: Install yarn
+        run: npm install -g yarn
+      - name: Install dependencies
+        run: |
+          yarn install
+          make install_deps
+      - name: Build WASM file
+        run: make build
+      - name: Cache/restore binaries
+        uses: actions/cache@v1
+        with:
+          path: ./build
+          key: ${{ runner.os }}-${{ github.run_id }}
+      - name: Save crates
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('./Makefile') }}
+
+  test-api:
+    name: "Test with Lotus RPC"
+    needs: [build]
+    env:
+      NODE_URL: ${{ secrets.NODE_URL }}
+      NODE_TOKEN: ${{ secrets.NODE_TOKEN }}
+      SEED: ${{ secrets.SEED }}
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16.13.0'
+      - name: Cache/restore binaries
+        uses: actions/cache@v1
+        with:
+          path: ./build
+          key: ${{ runner.os }}-${{ github.run_id }}
+      - name: Install yarn
+        run: npm install -g yarn
+      - name: Install dependencies
+        run: yarn install
+      - name: Run tests rpc
+        run: yarn tests:rpc
