@@ -25,9 +25,10 @@
   },
   "type": "module",
   "devDependencies": {
-    "@zondax/filecoin-signing-tools": "1.0.4",
     "@ipld/dag-cbor": "^7.0.2",
     "@types/jest": "^28.1.2",
+    "@zondax/filecoin-signing-tools": "^1.0.4",
+    "@zondax/fvm-client-tool": "^1.0.2",
     "dotenv": "^16.0.1",
     "jest": "^28.1.1",
     "log4js": "^6.5.2",
