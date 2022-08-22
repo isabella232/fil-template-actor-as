@@ -1,4 +1,4 @@
-# Fil AssemblyScript Boilerplate Actor
+# Fil AssemblyScript Template Actor
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![GithubActions](https://github.com/Zondax/fil-boilerplate-actor-as/actions/workflows/main.yaml/badge.svg)](https://github.com/Zondax/fil-boilerplate-actor-as/blob/master/.github/workflows/main.yaml)
